@@ -2,6 +2,10 @@
 
 純 HTML、CSS、JavaScript 網站，使用原生 WebGL 顯示黑金風格立體銀杏與建築。本儲存庫包含完整網站程式、圖片及所有正式靜態資料，未因 20 MB 限制刪減任何建築分區。
 
+公開網站：[東京銀杏地圖](https://jerrycheng0623.github.io/jerry/#explore)
+
+完整檔案：[GitHub 儲存庫](https://github.com/jerrycheng0623/jerry)
+
 ## 開啟與部署
 
 網站入口為根目錄 `index.html`。此交付版將原專案 `dist/` 內容放於根目錄，所有相對模組與素材路徑保持一致。
