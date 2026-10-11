@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11120f">
+  <meta name="description" content="探索東京銀杏景點、例年賞景季節與有日期的觀測紀錄。收藏你的金色秋日路線。">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>東京銀杏地圖｜探索你的金色秋天</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2311120f'/%3E%3Cpath d='M16 23C5 21 3 13 7 7c3-3 7-2 9 1 2-3 6-4 9-1 4 6 2 14-9 16zm0 0v5' fill='%23f3c75e' stroke='%23f3c75e'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css?v=20261009-smooth-v2">
+  <link rel="stylesheet" href="features.css?v=20261009-smooth-v2">
+  <link rel="stylesheet" href="city.css?v=20261009-smooth-v2">
+  <script defer src="startup.js?v=20261009-smooth-v2"></script>
+</head>
+<body>
+  <section id="local-file-notice" class="local-file-notice" hidden aria-labelledby="local-file-title" tabindex="-1">
+    <img src="assets/ginkgo-leaf.png" alt="" width="60" height="65">
+    <h1 id="local-file-title">先啟動你的東京銀杏地圖。</h1>
+    <p>直接雙擊 HTML 會以檔案方式開啟，無法提供底圖需要的網站來源資訊，也可能阻擋互動程式。</p>
+    <ol><li>回到 <strong>tokyo-ginkgo-map</strong> 資料夾，雙擊 <strong>啟動網站.command</strong>。</li><li>保留啟動的終端機視窗，再按下方按鈕開啟網站。</li></ol>
+    <a class="gold-button" href="http://127.0.0.1:8867/#explore">開啟本機網站</a>
+    <p class="small-note">若網站已啟動，直接按按鈕即可。啟動方式及其他系統的指令請見 README.md。</p>
+  </section>
+  <a class="skip-link" href="#main">跳至主要內容</a>
+  <div class="ambient" aria-hidden="true"></div>
+  <div class="falling-leaves" aria-hidden="true" id="leaves"></div>
+  <header class="site-header">
+    <a href="#explore" class="brand" aria-label="東京銀杏地圖首頁"><img src="assets/ginkgo-leaf.png" alt="" width="40" height="40"><span>東京銀杏地圖</span></a>
+    <nav aria-label="主要導覽">
+      <a href="#explore" data-view="explore" class="active" aria-current="page">探索地圖</a>
+      <a href="#calendar" data-view="calendar">賞景日曆</a>
+      <a href="#favorites" data-view="favorites">我的收藏 <span id="favorite-count" class="count">0</span></a>
+      <a href="#walk" data-view="walk">散步規劃</a>
+    </nav>
+    <button id="motion-toggle" class="motion-toggle" aria-pressed="true" title="切換銀杏飄落動畫"><span class="motion-symbol" aria-hidden="true">◌</span><span id="motion-label">動畫開啟</span></button>
+  </header>
+  <main id="main" tabindex="-1">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy"><h1 id="page-title">把東京的秋天，<br>收進你的地圖。</h1><p id="page-subtitle">探索銀杏步道，尋找屬於你的金色風景。</p></div>
+      <div class="season-seal" aria-hidden="true"><span>東京</span><strong>秋</strong><span>金色的散步時光</span></div>
+      <span class="art-note">背景為生成示意圖</span>
+    </section>
+    <section id="explore-view" class="view" aria-label="探索銀杏景點">
+      <div class="observation-toolbar"><div><strong>讓每一片葉子，都有日期。</strong><p>地圖顯示所選年份、日期以前最近的觀測，不推算今日葉況。</p></div><label>查閱日期<input type="date" id="leaf-date"></label><label>葉片階段<select id="leaf-filter"><option value="all">所有階段</option></select></label><button id="leaf-today" class="outline-button">回到今天</button></div>
+      <div class="workspace">
+        <aside class="explore-panel">
+          <div class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><input id="search" type="search" placeholder="搜尋景點或地區" aria-label="搜尋景點或地區" autocomplete="off"></div>
+          <div id="feature-filters" class="chips" aria-label="景觀特色篩選"><button class="chip active" data-feature="all" aria-pressed="true">全部</button><button class="chip" data-feature="avenue" aria-pressed="false">銀杏並木</button><button class="chip" data-feature="free" aria-pressed="false">免費景點</button><button class="chip" data-feature="tree" aria-pressed="false">大銀杏</button></div>
+          <div class="select-row"><label for="area-filter" class="sr-only">地區</label><select id="area-filter"><option value="all">所有地區</option><option value="central">東京中心</option><option value="west">杉並・練馬・板橋</option><option value="tama">多摩地區</option></select><label for="status-filter" class="sr-only">最新紀錄</label><select id="status-filter"><option value="all">所有紀錄</option><option value="history">有歷史觀測</option><option value="unknown">所選年份待更新</option></select></div>
+          <div class="select-row"><label for="grade-filter" class="sr-only">原清冊來源等級</label><select id="grade-filter"><option value="all">所有來源等級</option><option value="S">原清冊 S 級</option><option value="A">原清冊 A 級</option><option value="B">原清冊 B 級</option><option value="C">原清冊 C 級</option></select><label for="sort-filter" class="sr-only">排序</label><select id="sort-filter"><option value="original">清冊順序</option><option value="name">名稱排序</option><option value="history">最近歷史觀測</option></select></div><p class="small-note filter-note">等級沿用原清冊；不代表當季葉況已確認。</p>
+          <div class="result-heading"><h2>探索景點 <span id="result-count">—</span></h2><button id="reset-filters" class="text-button">重設</button></div>
+          <div id="spot-list" class="spot-list" aria-label="搜尋結果"></div>
+          <div class="panel-footnote">葉況保留觀測日期；尚無當季紀錄時，不推測現況。</div>
+        </aside>
+        <div class="map-shell">
+          <div id="map" class="map" tabindex="0" role="region" aria-label="東京銀杏景點互動地圖，可拖曳或用方向鍵移動"><div id="tile-layer" class="tile-layer" aria-hidden="true"></div><div id="marker-layer" class="marker-layer"></div><svg id="city-overlay" class="city-overlay" aria-hidden="true"></svg><div id="city-labels" class="city-labels"></div></div>
+          <div class="map-top"><span class="map-label"><span class="gold-dot"></span>東京銀杏探索</span><button id="fit-map" class="map-action">26 處總覽</button></div>
+          <div class="map-view-tools">
+            <div class="map-mode-switch" role="group" aria-label="選擇地圖視圖"><button data-map-mode="2d" class="active" aria-pressed="true">平面地圖</button><button data-map-mode="3d" aria-pressed="false">立體銀杏 3D</button></div>
+            <div id="scene-controls" class="scene-controls" hidden><button id="rotate-left" aria-label="向左旋轉立體地圖">↶</button><button id="north-map" aria-label="立體地圖恢復北向上">北 ↑</button><button id="rotate-right" aria-label="向右旋轉立體地圖">↷</button><label for="map-tilt" class="sr-only">地圖傾斜角度</label><select id="map-tilt" aria-label="地圖傾斜角度"><option value="25">俯視</option><option value="48" selected>立體</option><option value="60">低視角</option><option value="street">近地視角 · 1.7m</option></select></div>
+          </div>
+          <details class="map-help"><summary aria-label="地圖範圍與模型說明">ⓘ 範圍、比例與資料圖例</summary><p>僅東京本土，不含離島。拖曳 55%；縮放為較慢的 0.42 級平滑過渡，最大 22 級，底圖最多 19 級放大顯示。縮小以完整東京為下限。<br>26 棵樹各置於景點代表座標；樹高 12 公尺為示意，總覽為辨識而放大符號，非單株測繪。未知葉況使用設計金色，實際狀態仍標示待更新。<br>26 處各 1 公里，全部已收錄建築均可查核。總覽盒型為低細節示意；放大選取分區後讀取完整官方輪廓。地面平坦化、無實際街景。<br>東京範圍：<a href="https://www.openstreetmap.org/relation/1543125" target="_blank" rel="noopener">OSM 簡化邊界</a>（2026-10-08，非測繪資料）。</p></details>
+          <div class="zoom-controls" aria-label="地圖縮放"><button id="zoom-in" aria-label="放大地圖">＋</button><button id="zoom-out" aria-label="縮小地圖">−</button></div>
+          <div id="map-message" class="map-message" hidden><p id="map-message-text">正在載入地圖…</p><button id="retry-map" class="text-button">重新載入地圖</button></div>
+          <div id="map-preview" class="map-preview"></div>
+        <details class="city-panel"><summary>地圖設定 <span>景點周邊 1 公里</span></summary><div class="city-panel-body">
+          <label class="city-search-label">搜尋收錄資料<input id="city-search" type="search" placeholder="建築名稱、地址或識別碼" disabled autocomplete="off"></label><div id="city-search-results" class="city-search-results" aria-live="polite"></div>
+          <label class="city-range">建築不透明度 <output id="city-opacity-value" for="city-opacity">45%</output><input id="city-opacity" type="range" min="15" max="85" value="45"></label>
+          <label>建築高度<select id="city-height"><option value="1">1× · 來源比例</option><option value="1.5">1.5× · 放大高度</option><option value="2">2× · 放大高度</option></select></label>
+          <fieldset><legend>圖層與資訊密度</legend><label class="city-check"><input data-city-layer="buildings" type="checkbox" checked>半透明立體建築</label><label class="city-check"><input data-city-layer="labels" type="checkbox">有名稱的建築標籤</label></fieldset>
+          <label class="city-check"><input id="city-simple" type="checkbox">簡化模式（保留全部建築的盒型示意）</label>
+          <p class="city-small">地鐵不在地圖上顯示。點選銀杏樹，即可查看官方附近交通摘要。</p><button id="city-catalog" class="city-wide">查看此區全部建築與來源</button>
+          <p id="city-data-status" class="city-small" role="status">26 處景點建築分區</p><button id="city-locate" class="city-wide">我的位置</button>
+          <button id="city-radius" class="city-wide">查看完整 1 公里範圍</button><button id="city-coverage" class="city-wide">回到所選銀杏位置</button><p class="city-small" id="city-load" role="status">準備讀取資料</p><button id="city-retry" class="city-wide" hidden>重新讀取資料</button>
+        </div></details>
+        <dialog id="building-catalog" class="building-catalog" aria-labelledby="catalog-title"><div class="catalog-heading"><div><span>完整來源紀錄 · 無棟數上限</span><h2 id="catalog-title">銀杏周邊建築清單</h2></div><button id="catalog-close" aria-label="關閉建築清單">×</button></div><div class="catalog-tools"><label>選擇銀杏位置<select id="catalog-region"></select></label><label>搜尋全部紀錄<input id="catalog-search" type="search" placeholder="名稱、地址或建築識別碼"></label><a id="catalog-download" download>下載完整來源 GeoJSON ↗</a></div><p id="catalog-count" role="status"></p><p>每頁 100 筆，全部來源紀錄皆可逐頁查看；點建築查看高度、來源與原始模型。未收錄的現地建築不自行補造。</p><div class="catalog-table"><table><thead><tr><th>序號</th><th>建築／識別碼</th><th>來源地址</th><th>高度性質</th><th>資料來源</th></tr></thead><tbody id="catalog-rows"></tbody></table></div><div class="catalog-pages"><button id="catalog-prev">上一頁</button><button id="catalog-next">下一頁</button></div></dialog>
+        <aside id="city-card" class="city-card" hidden aria-labelledby="city-card-title"><button id="city-close" aria-label="關閉城市資訊">×</button><span id="city-card-badge" class="city-eyebrow"></span><h2 id="city-card-title"></h2><div id="city-card-content"></div></aside>
+        <div class="city-map-status"><strong id="city-scale-label">高度倍率 1×（一致比例）</strong><span id="city-depth-label">金色樹為位置模型；葉況請看景點卡片</span><span id="city-view-status"></span></div>
+          <div class="map-bottom"><span>標記為園區或入口附近位置</span><span class="model-attribution">建築：<a href="https://docs.plateauview.mlit.go.jp/datasets/3d-tiles/" target="_blank" rel="noopener">東京都／PLATEAU</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> · 已加工</span><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap 貢獻者</a></div>
+        </div>
+      </div>
+      <div class="city-notes"><details><summary>圖例與操作</summary><p>香檳金：來源高度；銅色：樓層估算；灰：高度缺失、僅平面；亮金輪廓：選取建築。銀杏樹是位置示意模型，實際葉況另看景點卡片。</p><p>26 處總覽顯示完整東京與全部樹。拖曳、慢速縮放、旋轉與俯仰，最大放大 22 級。「近地視角」使用 1.7 公尺眼高示意，非實際街景或地形。按樹查看附近地下鐵；按建築或完整清單中的項目查看來源。</p></details><details><summary>資料、限制與教學用途</summary><p>僅供教學、非營利。26 處半徑 1 公里共 196,263 筆分區建築紀錄，去重 172,140 棟。全部可於建築清單逐頁查看，沒有 80／180／450 棟上限。低細節總覽採用來源包圍盒示意；選取位置放大後分批建立完整來源輪廓，完成數量會顯示。</p><p>東京都／PLATEAU 2025 官方 LOD1 輪廓及高度，發布 2026-03-13、取得 2026-10-08。高度缺失依樓層 × 3m 估算；兩者皆缺僅平面，不補假高度。地面平坦化，無實測屋頂、單株樹高或人行道路面。邊界裁切面不是實際建築牆面，官方快照不保證收錄現地每棟建物；跨出東京的部分不納入。</p><p>地鐵僅在點選銀杏後顯示官方交通摘要，不提供即時位置、班次或預估到站。未確認的附近地下鐵明示資料不足，可查看其他交通。<a href="https://docs.plateauview.mlit.go.jp/datasets/3d-tiles/" target="_blank" rel="noopener">PLATEAU 原始資料</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>。每棟資訊卡附原始來源。</p></details></div>
+      <div class="season-strip"><div><img src="assets/ginkgo-leaf.png" alt=""><span>金色季節</span></div><button data-month="10">10月<span>秋意漸濃</span></button><button data-month="11" class="highlight">11月<span>尋找金色風景</span></button><button data-month="12">12月<span>秋末的散步</span></button><a href="#calendar">查看賞景日曆</a></div>
+      <div id="leaf-legend" class="leaf-legend" aria-label="地圖葉況圖例"></div>
+      <section class="leaf-learning" aria-labelledby="leaf-learning-title"><div class="learning-copy"><h2 id="leaf-learning-title">一片葉子的四季。</h2><p>從新芽到金黃，慢慢讀懂銀杏的變化。<br>這是生長過程的教學示意，與各地的觀測分開。</p><div id="learning-stages" class="learning-stages"></div><a href="#walk" class="outline-button">規劃一段金色散步</a></div><div class="learning-figure"><div id="learning-leaf"></div><div id="learning-description"></div><div class="learning-source">知識參考：<a href="https://www.kew.org/read-and-watch/ginkgo-biloba-maidenhair-tree-kew-gardens" target="_blank" rel="noopener">皇家植物園 Kew</a>・<a href="https://www.meijijingugaien.jp/walk/sight/season.html" target="_blank" rel="noopener">外苑四季介紹</a></div></div></section>
+    </section>
+    <section id="calendar-view" class="view calendar-view" aria-label="賞景日曆" hidden>
+      <div class="calendar-toolbar"><div><h2>選一個日子，遇見金色秋天。</h2><p>例年季節供行程參考，實際葉況請以當季觀測為準。</p></div><label class="date-label">旅行日期<input type="date" id="travel-date" value="2026-11-20"></label></div>
+      <div class="calendar-tabs" role="group" aria-label="日曆資料類型"><button class="active" data-calendar-mode="typical" aria-pressed="true">例年季節</button><button data-calendar-mode="history" aria-pressed="false">歷史觀測</button></div>
+      <div id="calendar-content"></div>
+    </section>
+    <section id="favorites-view" class="view favorites-view" aria-label="我的收藏" hidden><div class="section-heading"><div><h2>收藏你的金色風景。</h2><p>收藏儲存在這台裝置，方便下次繼續規劃。</p></div><button id="clear-favorites" class="outline-button">清除收藏</button></div><div id="favorites-list" class="favorites-list"></div></section>
+    <section id="walk-view" class="view" aria-label="散步路線規劃" hidden>
+      <div class="walk-workspace"><form id="walk-form" class="walk-panel">
+        <div class="walk-step"><span class="step-number">1</span><div><h2>選起點</h2><label class="sr-only" for="walk-start">散步起點</label><select id="walk-start"></select><div class="start-tools"><button type="button" id="walk-location" class="text-button">使用我的位置</button><button type="button" id="walk-map-center" class="text-button">用地圖中心</button></div><details class="manual-origin"><summary>手動輸入東京附近座標</summary><div class="select-row"><label>緯度<input id="walk-lat" type="number" min="-90" max="90" step="any" placeholder="35.69"></label><label>經度<input id="walk-lng" type="number" min="-180" max="180" step="any" placeholder="139.72"></label></div><button type="button" class="outline-button" id="walk-manual">使用這個起點</button><p class="small-note">座標僅留在本次瀏覽；請輸入公開測試點或你願意交由路線服務處理的位置。</p></details><p id="walk-start-note" class="small-note">車站標記為附近代表點，請確認出口。</p></div></div>
+        <div class="walk-step"><span class="step-number">2</span><div><h2>散步時間</h2><div class="duration-options" aria-label="散步時間"><button type="button" data-duration="30" aria-pressed="false">30分鐘</button><button type="button" data-duration="60" aria-pressed="true" class="active">60分鐘</button><button type="button" data-duration="90" aria-pressed="false">90分鐘</button></div><label class="custom-duration">自訂分鐘<input id="walk-budget" type="number" value="60" min="10" max="480" required></label></div></div>
+        <div class="walk-step"><span class="step-number">3</span><div><div class="walk-pick-heading"><h2>選擇景點</h2><button type="button" id="walk-auto" class="text-button">讓網站推薦</button></div><p class="small-note" id="walk-selection-note">可選最多六處；未選時從附近六處比較。</p><div id="walk-choices" class="walk-choices"></div></div></div>
+        <details class="walk-advanced"><summary>進階選項</summary><label>推薦方式<select id="walk-preference"><option value="short">少走路</option><option value="more">時間內多賞點</option><option value="fixed">照我的順序</option></select></label><label>終點<select id="walk-end"><option value="last">最後一個景點</option><option value="return">返回起點</option></select></label><label>每處停留<select id="walk-stay"><option value="5">5分鐘</option><option value="10" selected>10分鐘</option><option value="20">20分鐘</option></select></label><label>出發日期<input type="date" id="walk-date" required></label><label>東京出發時間<input type="time" id="walk-time" value="10:00" required></label><label class="check-label"><input type="checkbox" id="walk-avoid-closed" checked>排除已知休園日的景點</label></details>
+        <p class="small-note route-privacy">產生路線將座標送往 FOSSGIS 運算；定位僅本次瀏覽。</p><button id="walk-submit" class="gold-button" type="submit">產生散步路線</button><p id="walk-status" role="status" aria-live="polite"></p>
+      </form><div id="walk-map-slot" class="walk-map-slot"></div></div>
+      <section class="route-section"><div class="section-heading"><div><h2>每一站，都值得慢下來。</h2><p>依道路步行時間比較順序，交通資訊與來源就在沿途。</p></div></div><div id="walk-result" aria-live="polite"><div class="route-empty"><img src="assets/ginkgo-leaf.png" alt=""><p>選好起點與時間，開始一段屬於你的散步。</p></div></div></section>
+    </section>
+    <section id="sources-view" class="view sources-view" aria-label="資料來源揭露" hidden><div class="section-heading"><div><h2>每一筆資訊，都有來處。</h2><p>本網站僅供教學使用，非營利用途。資料、觀測及示意分開揭露。</p></div></div><div id="sources-content"></div></section>
+    <footer><span>東京銀杏地圖</span><p><strong>本網站僅供教學使用，非營利用途。</strong><br>收錄 26 處景點、41 筆原清冊來源。內容補查 2026-10-08・代表座標基準 2026-10-02。尚未接入自動葉況更新。</p><div class="footer-links"><a href="#sources">資料來源與使用說明</a><a href="https://docs.google.com/spreadsheets/d/1dx_41InyuuWuILc4ZHJW8tTZMVOCpIuSz-QzISzd7y0/edit?gid=164385659#gid=164385659" target="_blank" rel="noopener">原始來源目錄</a></div></footer>
+  </main>
+  <dialog id="detail-dialog" aria-labelledby="detail-title"><button id="close-detail" class="close-button" aria-label="關閉景點詳細資訊">×</button><div id="detail-content"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">請啟用 JavaScript，使用互動地圖、搜尋及收藏。</p></noscript>
+</body>
+</html>
